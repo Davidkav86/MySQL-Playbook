@@ -1,0 +1,21 @@
+---
+# defaults file for mgmt-node
+
+# IP addresses for various nodes
+
+management_node_ip: 192.168.1.12
+
+sql_node_1_ip: 192.168.1.13
+sql_node_2_ip: 192.168.1.14
+
+data_node_1_ip: 192.168.1.15
+data_node_2_ip: 192.168.1.16
+
+# Data Storage sizes
+
+data_memory: 512M
+index_memory: 256M
+
+# No of replicas
+
+no_of_replicas: 2 

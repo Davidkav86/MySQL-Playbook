@@ -1,0 +1,51 @@
+---
+# tasks file for sql-node
+
+- name : Add a group
+  group: name={{ groupname }}
+
+- name: Add a user
+  user: name={{ username }}
+        group={{ groupname }}
+
+- name: Update apt-get
+  apt: update_cache=yes upgrade=yes
+
+- name: Download MySQL Cluster tar file
+  shell: chdir=/var/tmp
+         wget http://ftp.heanet.ie/mirrors/www.mysql.com/Downloads/MySQL-Cluster-7.4/mysql-cluster-gpl-7.4.6-linux-glibc2.5-x86_64.tar.gz
+         
+- name: Unzip tar file to /usr/local
+  shell: chdir=/var/tmp 
+         tar -C /usr/local -xzvf mysql-cluster-gpl-7.4.6-linux-glibc2.5-x86_64.tar.gz
+         
+- name: Create a link to /usr/local/mysql directory
+  shell: ln -s /usr/local/mysql-cluster-gpl-7.4.6-linux-glibc2.5-x86_64 /usr/local/mysql
+
+- name: Install libaio1 package
+  apt: name=libaio1 state=present
+
+- name: Install mysql server
+  sudo: yes
+  shell: chdir=/usr/local/mysql 
+         scripts/mysql_install_db --user=mysql
+
+- name: Give folder permissions
+  shell: chdir=/usr/local/mysql
+         chown -R root .;
+         chown -R mysql data;
+         chgrp -R mysql .;
+           
+- name: Make sql server start when operating system boots
+  shell: chdir=/usr/local/mysql
+         cp support-files/mysql.server /etc/init.d/;
+         sudo chmod a+x /etc/init.d/mysql.server;
+         sudo update-rc.d mysql.server defaults;
+
+- name: Add my.cnf file
+  template: src=my.cnf dest=/etc/my.cnf
+
+- name: Start mysql server
+  sudo: yes
+  shell: chdir=/etc/init.d
+         ./mysql.server start

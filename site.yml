@@ -1,0 +1,15 @@
+- hosts: managementnode
+  sudo: yes
+  roles:
+    - role: mgmt-node
+
+- hosts: sqlnodes
+  sudo: yes
+  roles:
+    - role: sql-node
+
+- hosts: datanodes
+  sudo: yes
+  roles:
+    - role: data-node
+

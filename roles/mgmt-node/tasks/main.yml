@@ -1,0 +1,37 @@
+---
+# tasks file for mgmt-node
+
+- name: Update apt-get
+  apt: update_cache=yes upgrade=yes
+
+- name: Download MySQL Cluster tar file
+  shell: chdir=/var/tmp
+         wget http://ftp.heanet.ie/mirrors/www.mysql.com/Downloads/MySQL-Cluster-7.4/mysql-cluster-gpl-7.4.6-linux-glibc2.5-x86_64.tar.gz
+
+- name: Unzip tar file
+  shell: chdir=/var/tmp
+         tar -xzvf mysql-cluster-gpl-7.4.6-linux-glibc2.5-x86_64.tar.gz
+
+- name: Move ndb scripts to /usr/local/bin
+  shell: chdir=/var/tmp/mysql-cluster-gpl-7.4.6-linux-glibc2.5-x86_64
+         cp bin/ndb_mgm* /usr/local/bin;
+
+- name: Set script permissions
+  sudo: yes
+  file: path=/usr/local/bin/ndb_mgm* state=touch mode="a+x"
+
+- name: Create /usr/local/mysql/mysql-cluster directory
+  sudo: yes
+  file: path=/usr/local/mysql/mysql-cluster state=directory
+
+- name: Create /var/lib/mysql-cluster directory
+  sudo: yes
+  file: path=/var/lib/mysql-cluster state=directory
+
+
+
+- name: Add config.ini file
+  template: src=config.ini dest=/var/lib/mysql-cluster/config.ini
+
+- name: Start management node script
+  shell: ndb_mgmd -f /var/lib/mysql-cluster/config.ini --ndb-nodeid=1

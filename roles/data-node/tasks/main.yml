@@ -1,0 +1,32 @@
+---
+# tasks file for data-node
+
+- name: Update apt-get
+  apt: update_cache=yes upgrade=yes
+
+- name: Download MySQL Cluster tar file
+  shell: chdir=/var/tmp
+         wget http://ftp.heanet.ie/mirrors/www.mysql.com/Downloads/MySQL-Cluster-7.4/mysql-cluster-gpl-7.4.6-linux-glibc2.5-x86_64.tar.gz
+
+- name: Unzip tar file
+  shell: chdir=/var/tmp
+         tar  -xzvf mysql-cluster-gpl-7.4.6-linux-glibc2.5-x86_64.tar.gz
+
+- name: Move ndb scripts to /usr/local/bin
+  shell: chdir=/var/tmp/mysql-cluster-gpl-7.4.6-linux-glibc2.5-x86_64
+         cp bin/ndbd /usr/local/bin/ndbd;
+         cp bin/ndbmtd /usr/local/bin/ndbmtd;
+
+- name: Give correct permisions to ndb scripts
+  sudo: yes
+  shell: chdir=/usr/local/bin
+         chmod +x ndb*
+
+- name: Add my.cnf file
+  template: src=my.cnf dest=/etc/my.cnf
+
+- name: Create the /usr/local/mysql/data directory
+  file: path=/usr/local/mysql/data state=directory
+
+- name: Start the data node
+  shell: ndbd

@@ -1,0 +1,14 @@
+# Author - David Kavanagh
+
+Playbook for the setup of a MySQL cluster
+
+The correct public ip addresses of the servers must be added to the inventory file
+
+The correct public or local ip addresses must be added to each of the following files
+I use local but nodes may not always be on the same subnet
+
+1) roles/mgmt-node/defaults/main.yml
+2) roles/sql-node/defaults/main.yml
+3) roles/data-node/defaults/main.yml
+
+The correct .pem file must be specified in the ansible.cfg file
